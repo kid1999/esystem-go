@@ -1,0 +1,6 @@
+addr: :8080
+
+dsn:  "host=kid1999.top user=postgres password=pass=kid1999 dbname=esystem port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+max_idle_conn: 100
+
+jwt_secret: "djkl545453"
