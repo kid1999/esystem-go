@@ -1,12 +1,12 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">
         404
       </div>
 
-      <div class="text-h2" style="opacity:.4">
-        Oops. Nothing here...
+      <div class="text-h2 text-amber-1" style="opacity:.4">
+        不好意思，发生了未知的错误！
       </div>
 
       <q-btn
@@ -15,7 +15,7 @@
         text-color="blue"
         unelevated
         to="/"
-        label="Go Home"
+        label="返回主页"
         no-caps
       />
     </div>
@@ -29,3 +29,9 @@ export default defineComponent({
   name: 'Error404'
 })
 </script>
+
+<style>
+  body{
+    background-image: url('https://w.wallhaven.cc/full/mp/wallhaven-mpe799.jpg')
+  }
+</style>

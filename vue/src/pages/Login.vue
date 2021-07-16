@@ -26,14 +26,15 @@
                 :rules="[ val => val && val.length > 0 || '请输入学号']"
               />
 
-              <q-input
-                filled
-                v-model="Password"
-                label="密码"
-                hint="password"
-                lazy-rules
-                :rules="[ val => val && val.length > 0 || '请输入密码']"
-              />
+              <q-input v-model="Password" label="密码" filled :type="isPwd ? 'password' : 'text'" hint="password" lazy-rules :rules="[ val => val && val.length > 0 || '请输入密码']">
+                <template v-slot:append>
+                  <q-icon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="isPwd = !isPwd"
+                  />
+                </template>
+              </q-input>
 
               <q-btn label="登 录" type="submit" color="primary"/>
               <q-btn label="重新填写" type="reset" color="primary" flat class="q-ml-sm" />
@@ -50,12 +51,14 @@
 <script>
 import { post } from '../util/request'
 import { defineComponent } from 'vue'
+import { successMsg, failMsg } from '../util/msg'
 export default defineComponent({
   name: 'Login',
   data () {
     return {
       StudentID: '',
-      Password: ''
+      Password: '',
+      isPwd: true
     }
   },
   methods: {
@@ -75,11 +78,11 @@ export default defineComponent({
         .then(res => {
           console.info(res)
           localStorage.setItem('token', res.token)
-          localStorage.setItem('user', res.user)
-          this.$q.notify({
-            type: 'success',
-            message: '登录成功！'
-          })
+          localStorage.setItem('user', JSON.stringify(res.user))
+          successMsg('登录成功！')
+          this.$router.push('/')
+        }).catch(e => {
+          failMsg('登录失败！')
         })
     }
   }

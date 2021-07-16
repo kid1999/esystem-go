@@ -4,3 +4,6 @@ dsn:  "host=kid1999.top user=postgres password=pass=kid1999 dbname=esystem port=
 max_idle_conn: 100
 
 jwt_secret: "djkl545453"
+
+AccessKey: "root"
+SecretKey: "pass=kid1999"

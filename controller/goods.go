@@ -11,6 +11,7 @@ import (
 	models "esystem/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type Goods struct {
@@ -20,13 +21,13 @@ type Goods struct {
 
 func (g *Goods) AddGoods(c *gin.Context){
 	var goods models.Goods
-	c.Bind(&goods)
+	c.ShouldBind(&goods)
 
 	if goods.GoodsName == "" || goods.Description == "" || goods.OwnerStudentID == ""{
 		c.JSON(http.StatusBadRequest,"参数请求错误！")
 	}else{
-		goods.State = "applying"
-		database.DB.Create(&goods)
+		goods.State = ""
+		database.DB.Model(&models.Goods{}).Create(&goods)
 		c.JSON(http.StatusOK,goods)
 	}
 }
@@ -46,10 +47,21 @@ func (g *Goods) GoodsInfo(c *gin.Context){
 
 
 func (g *Goods) FindAllGoods(c *gin.Context){
+	pageindex, _ := strconv.Atoi(c.Param("pageindex"))
+	pagesize,_  := strconv.Atoi(c.Param("pagesize"))
+
+	var count int64
+	database.DB.Model(&models.Goods{}).Where("state <> ?","").Count(&count)
+
 	goodsList := []models.Goods{}
 
-	database.DB.Find(&goodsList)
-	c.JSON(http.StatusOK,goodsList)
+	database.DB.Offset((pageindex-1)*pagesize).Limit(pagesize).Find(&goodsList).Where("state <> ?","")
+	res := make(map[string]interface{})
+	res["goods"] = goodsList
+	res["count"] = count
+	res["pageindex"] = pageindex
+	res["pagesize"] = pagesize
+	c.JSON(http.StatusOK,res)
 }
 
 
@@ -79,15 +91,23 @@ func (g *Goods) UpdateGoods(c *gin.Context){
 
 
 func (g *Goods) FindGoodsByName(c *gin.Context){
-	goodsList := []models.Goods{}
-	goodsName := c.Query("goodsName")
+	pageindex, _ := strconv.Atoi(c.Query("pageindex"))
+	pagesize,_  := strconv.Atoi(c.Query("pagesize"))
+	text := c.Query("search")
 
-	if goodsName == "" {
-		c.JSON(http.StatusBadRequest,"参数请求错误！")
-	}else{
-		database.DB.Find(&goodsList,"GoodsName like '%?%'",goodsName)
-		c.JSON(http.StatusOK,goodsList)
-	}
+	var count int64
+	database.DB.Model(&models.Goods{}).Where("state <> ? And goods_name like ?","","%" + text + "%").Count(&count)
+
+	goodsList := []models.Goods{}
+
+	database.DB.Offset((pageindex-1)*pagesize).Limit(pagesize).Where("state <> '' And  goods_name like ?","%" + text + "%").Find(&goodsList)
+
+	res := make(map[string]interface{})
+	res["goods"] = goodsList
+	res["count"] = count
+	res["pageindex"] = pageindex
+	res["pagesize"] = pagesize
+	c.JSON(http.StatusOK,res)
 }
 
 
@@ -98,7 +118,7 @@ func (g *Goods) FindGoodsByStudentID(c *gin.Context){
 	if studentID == "" {
 		c.JSON(http.StatusBadRequest,"参数请求错误！")
 	}else{
-		database.DB.Find(&goodsList,"OwnerStudentID = ?",studentID)
+		database.DB.Find(&goodsList,"OwnerStudentID = ?",studentID).Where("state <> ?","")
 		c.JSON(http.StatusOK,goodsList)
 	}
 }

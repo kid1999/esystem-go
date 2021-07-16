@@ -9,10 +9,10 @@ package model
 
 type Log struct {
 	Model
-	StudentID		string		`gorm:"type:varchar(50);not null;default:''" json:"student_id,omitempty"`
-	UserName 		string		`gorm:"type:varchar(50);" json:"username,omitempty"`
-	Type			string		`gorm:"type:varchar(50)" json:"type,omitempty"`
-	AimID			uint		`gorm:"type:integer" json:"aim_id,omitempty"`
+	StudentID		string		`gorm:"type:varchar(50);not null;default:''" json:"StudentID,omitempty"`
+	UserName 		string		`gorm:"type:varchar(50);" json:"UserName,omitempty"`
+	Type			string		`gorm:"type:varchar(50)" json:"Type,omitempty"`
+	AimID			uint		`gorm:"type:integer" json:"AimID,omitempty"`
 }
 
 

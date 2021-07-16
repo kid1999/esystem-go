@@ -1,34 +1,48 @@
 <template>
 
   <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-4">
-      <q-card class="my-card" flat bordered>
-        <q-img
-          src="https://cdn.quasar.dev/img/parallax2.jpg">
-
-          <div class="absolute-bottom text-subtitle text-center">
-            18.8
-            元
+    <div class="col-xs-6 col-sm-4 col-md-3 q-pa-sm" v-for="goods in goodsList" :key="goods.ID">
+    <q-card class="shadow-2 "   >
+      <q-img
+        :src="goods.ImgUrl" height="250px">
+        <div class="absolute-bottom text-subtitle text-center">
+          {{FormatTime(goods.created_at)}}
+        </div>
+      </q-img>
+      <q-card-section>
+        <div class="text-h6">{{ computedGoodsName(goods.GoodsName )}}
+          <q-tooltip self="bottom middle" :offset="[10, 10]" anchor="top middle">
+            {{goods.GoodsName}}
+          </q-tooltip>
+        </div>
+        <div class="text-body1 text-grey">
+          {{goods.Description}}
+        </div>
+        <div class="text-overline text-orange-9">所有者：{{goods.Username}}</div>
+        <div class="row">
+          <div class="col-xs-6"><q-btn color="dark" label="联系方式" @click="View(goods)"/></div>
+          <div class="col-xs-6"><p class="text-h6 text-grey">¥ {{goods.Price}} 元</p>
           </div>
-        </q-img>
-        <q-card-section>
-          <div class="text-overline text-orange-9">拥有者</div>
-          <div class="text-h5 q-mt-sm q-mb-xs">商品名称</div>
-          <div class="text-caption text-grey">
-            描述信息
-          </div>
-        </q-card-section>
+        </div>
 
-        <q-card-actions>
-          <q-btn flat color="dark" label="联系方式" @click="ViewPhone"/>
-          <q-btn flat color="dark" label="msg" @click="Test"/>
-          <q-btn flat color="dark" label="TestAxios" @click="TestAxios"/>
-        </q-card-actions>
-
-      </q-card>
-    </div>
-
+      </q-card-section>
+    </q-card>
   </div>
+  </div>
+
+  <q-footer style="background-color: transparent;left: 40%;top: 92%;">
+    <q-toolbar>
+      <q-pagination
+        v-model="current"
+        :max="totalPage"
+        :max-pages="8"
+        :boundary-numbers="false"
+        direction-links
+        push
+        color="teal"
+      />
+    </q-toolbar>
+  </q-footer>
 
   <q-dialog v-model="view">
     <q-card style="width: 300px" class="q-px-sm q-pb-md">
@@ -42,27 +56,27 @@
           <q-icon name="phone_iphone" />
         </q-item-section>
         <q-item-section>
-          hello
+          {{phone}}
         </q-item-section>
       </q-item>
 
       <q-item-label header>QQ</q-item-label>
       <q-item dense>
         <q-item-section avatar>
-          <q-icon name="sports_kabaddi" />
+          <q-icon name="support_agent" />
         </q-item-section>
         <q-item-section>
-          1234565
+          {{qq}}
         </q-item-section>
       </q-item>
 
       <q-item-label header>WeChat</q-item-label>
       <q-item dense>
         <q-item-section avatar>
-          <q-icon name="location_city" />
+          <q-icon name="textsms" />
         </q-item-section>
         <q-item-section>
-          6666666
+          {{wx}}
         </q-item-section>
       </q-item>
     </q-card>
@@ -72,54 +86,68 @@
 
 <script>
 import { defineComponent } from 'vue'
-import { get, post, put, deleted } from '../util/request'
+import { get } from '../util/request'
+import { failMsg } from '../util/msg'
+// import { successMsg, failMsg } from '../util/msg'
 
 export default defineComponent({
   name: 'PageIndex',
   data () {
     return {
       view: false,
-      slideVol: 39,
-      slideAlarm: 56,
-      slideVibration: 63,
-      expanded: false,
-      lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      current: 1,
+      pagesize: 28.0,
+      totalPage: 20,
+      goodsList: [],
+      phone: '',
+      wx: '',
+      qq: ''
     }
   },
-  methods: {
-    ViewPhone: function (event) {
-      this.view = true
-    },
-    Test () {
-      this.$q.notify({
-        type: 'warning',
-        message: 'This is a "warning" type notification.'
+  created () {
+    const searchText = this.$route.query.search
+    const _this = this
+    if (searchText !== undefined) {
+      get('/goods/search', { pagesize: this.pagesize, pageindex: this.current, search: searchText }).then(res => {
+        _this.goodsList = res.goods
+        _this.totalPage = Math.ceil(res.count / _this.pagesize)
+        _this.current = res.pageindex
       })
-      post('' + this.user.id, {})
-        .then(res => {
-          this.userGoods = res.data
-        })
-      deleted('' + this.user.id, {})
-        .then(res => {
-          this.userGoods = res.data
-        })
-      put('' + this.user.id, {})
-        .then(res => {
-          this.userGoods = res.data
-        })
+    } else {
+      get('/goods', { pagesize: this.pagesize, pageindex: this.current }).then(res => {
+        console.info(res)
+        _this.goodsList = res.goods
+        _this.totalPage = Math.ceil(res.count / _this.pagesize)
+        _this.current = res.pageindex
+      })
+    }
+  },
+  watch: {
+    $route (to, from) { this.$router.go(0) },
+    goodsList () {
+      if (this.goodsList.length === 0) {
+        failMsg('暂无内容被检索！')
+      }
+    }
+
+  },
+  methods: {
+    View (goods) {
+      this.view = true
+      this.qq = goods.QQ
+      this.wx = goods.Wx
+      this.phone = goods.Phone
     },
-    TestAxios () {
-      get('/admin/users', {})
-        .then(res => {
-          console.info(res)
-        })
+    computedGoodsName (str) {
+      if (str.length > 12) {
+        return str.slice(0, 12) + '...'
+      } else {
+        return str
+      }
+    },
+    FormatTime (date) {
+      return date.slice(0, 10) + ' ' + date.slice(11, 16)
     }
   }
 })
 </script>
-
-<style lang="sass" scoped>
-  .my-card
-    width: 100%
-    max-width: 350px
-</style>

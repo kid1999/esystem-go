@@ -9,13 +9,14 @@ package model
 
 type Goods struct {
 	Model
-	GoodsName 		string		`gorm:"type:varchar(50);unique_index" json:"goods_name,omitempty"`
-	Description		string		`gorm:"type:varchar(250);not null;default:''" json:"password,omitempty"`
-	OwnerStudentID	string		`gorm:"type:varchar(50);not null;default:''" json:"owner_student_id,omitempty"`
-	UserName		string		`gorm:"type:varchar(30);not null;default:''" json:"username,omitempty"`
-	Phone			string		`gorm:"type:varchar(20);not null;default:''" json:"phone,omitempty"`
-	Wx				string		`gorm:"type:varchar(50);default:''" json:"wx,omitempty"`
-	QQ				string		`gorm:"type:varchar(50);default:''" json:"qq,omitempty"`
-	Price			float64		`gorm:"type:decimal;;default:0" json:"price,omitempty"`
-	State			string		`gorm:"type:varchar(20);default:'applying'" json:"state,omitempty"`
+	GoodsName 		string		`gorm:"type:varchar(50);" json:"GoodsName,omitempty"`
+	Description		string		`gorm:"type:varchar(250);not null;default:''" json:"Description,omitempty"`
+	OwnerStudentID	string		`gorm:"type:varchar(50);not null;" json:"OwnerStudentID,omitempty"`
+	Username		string		`gorm:"type:varchar(30);not null;default:''" json:"Username,omitempty"`
+	Phone			string		`gorm:"type:varchar(20);not null;default:''" json:"Phone,omitempty"`
+	Wx				string		`gorm:"type:varchar(50);default:''" json:"Wx,omitempty"`
+	QQ				string		`gorm:"type:varchar(50);default:''" json:"QQ,omitempty"`
+	Price			float64		`gorm:"type:decimal;default:0" json:"Price,omitempty"`
+	State			string		`gorm:"type:varchar(20);default:''" json:"State,omitempty"`
+	ImgUrl			string		`gorm:"type:varchar(250);default:'http://kid1999.top:9000/images/favor.png'" json:"ImgUrl,omitempty"`
 }

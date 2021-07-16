@@ -17,7 +17,6 @@ type User struct {
 	Wx				string		`gorm:"type:varchar(50);default:''" json:"Wx,omitempty"`
 	QQ				string		`gorm:"type:varchar(50);default:''" json:"QQ,omitempty"`
 	Email			string		`gorm:"type:varchar(50);default:''" json:"Email,omitempty"`
-	Goods			[]Goods		`gorm:"foreignKey:ID"`
-	State			string		`gorm:"type:varchar(20);default:'applying'" json:"State,omitempty"`
+	State			string		`gorm:"type:varchar(20);default:''" json:"State,omitempty"`
 }
 

@@ -15,7 +15,7 @@ func InitDB() (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(conf.DSN),&gorm.Config{})
 
 	// create tables
-	// db.AutoMigrate(&model.User{}, &model.Goods{}, &model.Log{})
+	db.AutoMigrate(&model.User{}, &model.Goods{}, &model.Log{})
 
 
 	if err == nil {

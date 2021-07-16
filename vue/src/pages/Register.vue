@@ -41,6 +41,7 @@
                 v-model="Password"
                 label="密码"
                 hint="password"
+                type="password"
                 lazy-rules
                 :rules="[ val => val && val.length > 0 || '请输入密码']"
               />
@@ -48,7 +49,7 @@
               <q-input
                 filled
                 v-model="Password2"
-                type="passoword"
+                type="password"
                 label="确认密码"
                 hint="password"
                 lazy-rules
@@ -58,6 +59,7 @@
               <q-input
                 filled
                 v-model="Phone"
+                type="tel"
                 label="手机"
                 mask="### #### ####"
                 unmasked-value
@@ -84,6 +86,7 @@
                 filled
                 v-model="Email"
                 label="邮箱"
+                type="email"
                 hint="email"
               />
 
@@ -102,6 +105,7 @@
 <script>
 import { post } from '../util/request'
 import { defineComponent } from 'vue'
+import { successMsg, failMsg } from '../util/msg'
 export default defineComponent({
   name: 'Register',
   data () {
@@ -133,12 +137,10 @@ export default defineComponent({
           post('/register', { StudentID: this.StudentID, Password: this.Password, Username: this.Username, Phone: this.Phone, Wx: this.Wx, QQ: this.QQ, Email: this.Email })
             .then(res => {
               console.info(res)
+              successMsg('注册成功！')
             })
         } else {
-          this.$q.notify({
-            type: 'warning',
-            message: '请填写必要信息！'
-          })
+          failMsg('请填写必要信息！')
         }
       })
     }

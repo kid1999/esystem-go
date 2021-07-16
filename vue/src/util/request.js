@@ -1,9 +1,7 @@
 import axios from 'axios'
-import {
-  Loading,
-  Notify
-} from 'quasar'
+import { Loading } from 'quasar'
 import router from '../router/routes'
+import { failMsg, timeoutMsg } from './msg'
 
 const instance = axios.create({ // 创建axios实例，在这里可以设置请求的默认配置
   timeout: 10000, // 设置超时时间10s
@@ -49,18 +47,13 @@ instance.interceptors.request.use(config => {
   return config
 }, error => {
   // 对请求错误做些什么
-  Notify({
-    type: 'warning',
-    message: '网络发生错误！'
-  })
+  timeoutMsg('网络发生错误！')
   return Promise.reject(error)
 })
 
 /** 添加响应拦截器  **/
 instance.interceptors.response.use(response => {
   Loading.hide()
-
-  console.info(response)
 
   // 先用http 状态码判断
   if (response.status === 200) { // 响应结果里的status: ok是我与后台的约定，大家可以根据实际情况去做对应的判断
@@ -80,10 +73,7 @@ instance.interceptors.response.use(response => {
   if (error.response) {
     // 根据请求失败的http状态码去给用户相应的提示
     const tips = error.response.status in httpCode ? httpCode[error.response.status] : error.response.data.message
-    Notify({
-      type: 'warning',
-      message: tips
-    })
+    failMsg(tips)
     if (error.response.status === 401) { // token或者登陆失效情况下跳转到登录页面，根据实际情况，在这里可以根据不同的响应错误结果，做对应的事。这里我以401判断为例
       router.push({
         path: '/login'
@@ -91,10 +81,7 @@ instance.interceptors.response.use(response => {
     }
     return Promise.reject(error)
   } else {
-    Notify({
-      type: 'warning',
-      message: '请求超时, 请刷新重试'
-    })
+    failMsg('请求超时, 请刷新重试')
     return Promise.reject(new Error('请求超时, 请刷新重试'))
   }
 })
